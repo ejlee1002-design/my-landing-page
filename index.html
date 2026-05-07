@@ -547,6 +547,31 @@
     .page.active { display: block; }
     .nav-menu a.nav-active { color: var(--rose) !important; font-weight: 700; }
 
+    /* ── 햄버거 버튼 ── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px; height: 40px;
+      background: none; border: none;
+      cursor: pointer; padding: 6px;
+      border-radius: 8px;
+      transition: background .2s;
+    }
+    .nav-hamburger:hover { background: var(--rose-pale); }
+    .nav-hamburger span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      margin: 0 auto;
+      transition: transform .22s, opacity .22s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
     /* ── 반응형 ── */
     @media (max-width: 960px) {
       .strengths-grid { grid-template-columns: repeat(2, 1fr); }
@@ -559,7 +584,33 @@
       .sbar-item { border-right: none; border-bottom: 1px solid var(--line); padding: 28px 0; }
       .sbar-item:last-child { border-bottom: none; }
       nav { padding: 0 24px; }
-      .nav-menu { display: none; }
+      .nav-hamburger { display: flex; }
+      .nav-menu {
+        display: flex !important;
+        flex-direction: column;
+        position: fixed;
+        top: 72px; left: 0; right: 0;
+        background: rgba(250,247,245,0.98);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 8px 32px rgba(26,15,18,0.08);
+        padding: 8px 28px 20px;
+        gap: 0;
+        z-index: 199;
+        transform: translateY(-110%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .28s ease, opacity .22s ease;
+      }
+      .nav-menu.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .nav-menu li { border-bottom: 1px solid var(--line); }
+      .nav-menu li:last-child { border-bottom: none; padding-bottom: 4px; }
+      .nav-menu a { display: block !important; padding: 15px 0 !important; font-size: 1rem !important; }
+      .nav-btn { margin-top: 8px; text-align: center !important; display: block !important; padding: 14px 24px !important; border-radius: 8px !important; }
       .wrap, .about-wrap, .strengths-inner, .services-inner,
       .process-inner, .reviews-inner, .faq-inner, .location-inner { padding: 0 24px; }
       #strengths, #services, #pricing, #process, #reviews, #faq, #request, #location { padding-left: 24px; padding-right: 24px; }
@@ -802,7 +853,10 @@
     </svg>
     <span>신뢰속기사무소</span>
   </a>
-  <ul class="nav-menu">
+  <button class="nav-hamburger" id="navHamburger" aria-label="메뉴 열기">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-menu" id="navMenu">
     <li><a href="#" onclick="showPage('page-about'); return false;" data-page="page-about">소개</a></li>
     <li><a href="#" onclick="showPage('page-services'); return false;" data-page="page-services">서비스</a></li>
     <li><a href="#" onclick="showPage('page-process'); return false;" data-page="page-process">진행 과정</a></li>
@@ -1248,6 +1302,19 @@
   </div>
 </section>
 <script>
+  var hamburger = document.getElementById('navHamburger');
+  var navMenu = document.getElementById('navMenu');
+  hamburger.addEventListener('click', function() {
+    hamburger.classList.toggle('open');
+    navMenu.classList.toggle('open');
+  });
+  navMenu.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      hamburger.classList.remove('open');
+      navMenu.classList.remove('open');
+    });
+  });
+
   function showPage(pageId) {
     document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
     document.getElementById(pageId).classList.add('active');
